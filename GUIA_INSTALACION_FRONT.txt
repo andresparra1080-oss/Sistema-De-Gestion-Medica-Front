@@ -1,0 +1,89 @@
+PART A: GUÍA "DESDE CERO" (Visual Studio Code + instalador de dependencias)
+
+1) Instalar Node.js LTS
+   - Descarga Node.js LTS desde: https://nodejs.org/
+   - Windows:
+     * Ejecuta el instalador .msi/.exe.
+     * Acepta los permisos y el proceso normal de instalación.
+     * Marca la opción para instalar también herramientas de compilación si se te solicita.
+   - macOS:
+     * Descarga el .pkg de Node.js LTS y sigue el asistente.
+     * También puedes usar Homebrew: brew install node
+   - Linux (Ubuntu/Debian):
+     * sudo apt update
+     * sudo apt install nodejs npm
+     * Si tu sistema no lo reconoce, usa nvm: https://github.com/nvm-sh/nvm
+
+2) Instalar Git
+   - Descarga Git desde: https://git-scm.com/
+   - Windows: instala la versión recomendada y deja las opciones por defecto.
+   - macOS: xcode-select --install o instalar Git desde git-scm.com.
+   - Linux: sudo apt install git
+
+3) Configurar la terminal en VS Code
+   - Abre VS Code.
+   - Pulsa Ctrl + ~ (Windows/Linux) o Cmd + ~ (macOS) para abrir la terminal integrada.
+   - Comprueba que la terminal reconoce Node:
+     * node -v
+     * npm -v
+     * git --version
+   - Si no sale la versión, reinicia VS Code o cierra y vuelve a abrir la terminal.
+
+4) Extensiones recomendadas para React + Tailwind
+   - Tailwind CSS IntelliSense
+   - ES7+ React/Redux/React-Native snippets
+   - Prettier - Code formatter
+   - ESLint
+   - GitHub Copilot (opcional)
+   - Auto Rename Tag
+
+5) Abrir o clonar el proyecto
+   - En VS Code: Archivo > Abrir carpeta...
+   - O desde terminal:
+     * git clone <URL_DEL_REPO>
+     * cd <nombre-del-proyecto>
+     * code .
+
+PART B: COMANDOS DE MONTAJE Y CONFIGURACIÓN RÁPIDA
+
+1) Inicializar el proyecto si aún no existe
+   npm create vite@latest . -- --template react
+
+2) Instalar dependencias del proyecto
+   npm install
+
+3) Instalar Tailwind CSS y dependencias
+   npm install -D tailwindcss postcss autoprefixer
+   npx tailwindcss init -p
+
+4) Instalar librerías auxiliares
+   npm install axios react-router-dom lucide-react
+
+5) Ejecutar el proyecto
+   npm run dev
+
+6) Compilar para producción
+   npm run build
+
+7) Configuración de variables de entorno
+   Crea un archivo .env en la raíz con:
+   VITE_API_URL=http://localhost:18080/api
+
+   Importante:
+   - Si la API está en otra dirección, cambia esa URL.
+   - Nunca dejes secretos o tokens fijos en el frontend.
+   - Usa variables con prefijo VITE_ para que Vite las exponga al cliente.
+
+8) Evitar problemas de CORS con la API en C++ (Crow)
+   - Habilita CORS en el backend con los métodos y origen permitidos.
+   - Ejemplo típico:
+     * Access-Control-Allow-Origin: http://localhost:5173
+     * Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+     * Access-Control-Allow-Headers: Content-Type, Authorization
+   - En desarrollo, asegúrate de que el frontend y el backend se ejecuten en dominios o puertos distintos.
+   - Si el backend no acepta orígenes cruzados, la petición desde React será rechazada por el navegador.
+
+9) Recomendación final
+   - Mantén la API en una URL centralizada mediante VITE_API_URL.
+   - Separa la capa HTTP en src/api/ y la lógica de negocio en hooks/context.
+   - Usa componentes reutilizables en src/components/ y vistas en src/pages/.
