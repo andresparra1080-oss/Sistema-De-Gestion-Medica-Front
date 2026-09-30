@@ -1,28 +1,57 @@
-# ⚓ HeartMed — Sistema de Gestión Médica y Emergencias Naval
+# ⚓ HeartMed — Frontend UI (React + Tailwind CSS)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Status](https://img.shields.io/badge/Status-In%20Development-brightgreen)](#)
-[![Theme](https://img.shields.io/badge/Theme-Heart%20Pirates%20%2F%20Trafalgar%20Law-yellow)](#)
+[![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 
-## 📌 Descripción del Proyecto
+## 📌 Descripción General
 
-**HeartMed** es una plataforma de gestión médica e inventario naval diseñada para la tripulación de los **Piratas Heart**, liderada por el Capitán y Cirujano **Trafalgar Law**. Desarrollado para responder de forma rápida ante situaciones extremas en la *Grand Line* y el *Nuevo Mundo*, el sistema centraliza la información clínica, automatiza el control de insumos y ejecuta protocolos de emergencia médica a bordo del *Polar Tang*.
+**HeartMed UI** es la interfaz gráfica del sistema de gestión médica e inventario para la tripulación de los **Piratas Heart**, liderados por el Capitán **Trafalgar Law**. 
 
----
-
-## 🔥 Funcionalidades Clave
-
-* 🩺 **Historia Clínica Digital:** Expediente detallado de lesiones de combate, enfermedades y tratamientos.
-* 💊 **Gestión e Inventario Médico:** Control de stock, lotes, fechas de vencimiento y registro automático de consumo.
-* 🚨 **Módulo de Emergencias & Triaje:** Protocolos de respuesta rápida ante heridos de batalla o brotes epidémicos.
-* 🔔 **Alertas Automáticas:** Notificaciones en tiempo real sobre bajo stock de medicinas y dosis pendientes.
-* 📊 **Panel Médico del Capitán:** Dashboard con indicadores (KPIs) del estado de salud global de la tripulación.
-* 🔐 **Control de Acceso por Roles:** Permisos específicos para Capitán/Médico Principal, Cirujano Naval, Administrador de Inventario, Analista de Datos y Tripulantes.
+Diseñada como una *Single Page Application* (SPA) moderna, rápida y responsiva, esta aplicación consume la **API REST en C++ (Crow)** para visualizar estados clínicos, gestionar el stock de suministros del *Polar Tang* y activar protocolos de emergencia en tiempo real.
 
 ---
 
-## 🎨 Temática e Identidad Visual
+## 🎨 Identidad Visual y Temática
 
-* **Paleta Cromática:** Inspirada en los Piratas Heart — Amarillo quirúrgico (`#FFD700`), Negro, Blanco y toques de verde/azul médico.
-* **Interfaz Temática:** Componentes visuales e iconografía inspirados en el universo de *One Piece* y la nave *Polar Tang*.
-  
+* **Paleta Cromática:**
+  * **Amarillo Quirúrgico (Primary):** `#FFD700` (Inspirado en Trafalgar Law)
+  * **Negro / Fondo Oscuro:** `#121212` / `#1E1E1E`
+  * **Verde / Azul Médico (Accents):** `#10B981` / `#3B82F6`
+* **Estilo Visual:** Interfaz temática e intuitiva inspirada en los tableros tácticos y médicos del submarino *Polar Tang*.
+
+---
+
+## 🛠️ Stack Tecnológico
+
+* **Librería UI:** React 18
+* **Herramienta de Build:** Vite
+* **Estilos:** Tailwind CSS
+* **Navegación / Rutas:** React Router DOM
+* **Cliente HTTP:** Axios
+* **Iconografía:** Lucide React
+
+---
+
+## 📂 Estructura del Proyecto
+
+La aplicación sigue una arquitectura modular en React:
+
+```text
+├── src/
+│   ├── api/          # Cliente Axios configurado e integración con la API C++
+│   ├── components/   # Componentes atómicos e independientes (Botones, Modales, Cards, Nav)
+│   ├── context/      # Contextos globales de React (Autenticación, Sesión, Estado)
+│   ├── hooks/        # Custom Hooks para manejo de lógica UI y llamadas asíncronas
+│   ├── pages/        # Vistas principales (Dashboard, Historias Clínicas, Inventario)
+│   ├── styles/       # Hojas de estilo y directivas globales de Tailwind CSS
+│   ├── types/        # Modelos e interfaces de datos (contratos JSON de la API)
+│   ├── App.jsx       # Rutas y layout principal
+│   └── main.jsx      # Punto de entrada de React
+├── .env              # Variables de entorno locales
+├── .env.example      # Plantilla de configuración de entorno
+├── tailwind.config.js# Configuración de colores y temas de Tailwind
+├── vite.config.js    # Configuración de la herramienta de build Vite
+└── README.md         # Documentación del frontend
