@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  color: #e5e7eb;
-  background-color: #020817;
+  color: #f8fafc;
+  background-color: #050b16;
   font-family: Inter, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -12,6 +12,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --pirate-navy: #07111d;
+  --pirate-slate: #101c2c;
+  --pirate-gold: #f5c76b;
+  --pirate-red: #d93b4d;
+  --pirate-foam: #9bd8ff;
 }
 
 html {
@@ -22,9 +27,22 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top, rgba(59, 130, 246, 0.18), transparent 30%),
-    linear-gradient(135deg, #020817 0%, #111827 60%, #0f172a 100%);
+    radial-gradient(circle at top, rgba(245, 199, 107, 0.18), transparent 25%),
+    radial-gradient(circle at bottom left, rgba(217, 59, 77, 0.18), transparent 28%),
+    linear-gradient(135deg, #020817 0%, #081827 40%, #0d1b2a 100%);
   color: #f8fafc;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
 }
 
 #root {
@@ -33,10 +51,62 @@ body {
 
 @layer components {
   .card-surface {
-    @apply rounded-2xl border border-slate-700/80 bg-slate-900/70 shadow-soft backdrop-blur-sm;
+    @apply rounded-3xl border border-amber-400/30 bg-slate-900/70 shadow-[0_20px_70px_rgba(8,15,25,0.8)] backdrop-blur-md;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-slate-950 transition hover:opacity-90;
+    @apply inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 px-4 py-2 text-sm font-bold text-slate-950 transition hover:opacity-90;
+  }
+
+  .heart-pirates-panel {
+    background: linear-gradient(135deg, rgba(11, 17, 28, 0.96), rgba(17, 27, 42, 0.92));
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .heart-pirates-heading {
+    text-shadow: 0 0 22px rgba(245, 199, 107, 0.65);
+  }
+
+  .anime-shell {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(245, 199, 107, 0.2), transparent 18%),
+      radial-gradient(circle at 80% 20%, rgba(217, 59, 77, 0.22), transparent 20%),
+      linear-gradient(135deg, rgba(2, 8, 23, 0.92), rgba(8, 18, 31, 0.9));
+  }
+
+  .anime-shell::before,
+  .anime-shell::after {
+    content: '';
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border: 1px solid rgba(245, 199, 107, 0.15);
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
+  .anime-shell::before {
+    top: -140px;
+    right: -90px;
+  }
+
+  .anime-shell::after {
+    left: -120px;
+    bottom: -160px;
+  }
+
+  .anime-panel {
+    position: relative;
+    z-index: 1;
+    border-radius: 32px;
+    border: 1px solid rgba(245, 199, 107, 0.2);
+    background: linear-gradient(180deg, rgba(8, 15, 27, 0.96), rgba(13, 22, 34, 0.92));
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 30px 90px rgba(5, 9, 17, 0.8);
+  }
+
+  .anime-topbar {
+    background: linear-gradient(90deg, rgba(245, 199, 107, 0.08), rgba(151, 42, 52, 0.08), rgba(8, 17, 29, 0.2));
   }
 }
