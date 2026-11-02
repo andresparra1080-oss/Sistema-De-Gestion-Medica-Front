@@ -67,7 +67,7 @@ PART B: COMANDOS DE MONTAJE Y CONFIGURACIÓN RÁPIDA
 
 7) Configuración de variables de entorno
    Crea un archivo .env en la raíz con:
-   VITE_API_URL=http://localhost:18080/api
+   VITE_API_URL=http://localhost:18080
 
    Importante:
    - Si la API está en otra dirección, cambia esa URL.
