@@ -118,3 +118,22 @@ export async function createMovement(datos) {
 export async function getInventory() {
   return requestJson(buildApiUrl(ENDPOINTS.inventario), { headers: authHeaders() });
 }
+export async function getPatientById(idPaciente) {
+  return requestJson(buildApiUrl(`${ENDPOINTS.pacientes}/${idPaciente}`), {
+    headers: authHeaders(),
+  });
+}
+
+export async function getMedicalHistory(idPaciente) {
+  return requestJson(buildApiUrl(`${ENDPOINTS.pacientes}/${idPaciente}/historia`), {
+    headers: authHeaders(),
+  });
+}
+
+export async function updateMedicalHistory(idPaciente, cambios) {
+  return requestJson(buildApiUrl(`${ENDPOINTS.pacientes}/${idPaciente}/historia`), {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(cambios),
+  });
+}
