@@ -12,7 +12,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Anchor, ArrowLeft, CalendarDays, ChevronLeft, ChevronRight, ChevronsLeft, ClipboardList,
-  Coins, Compass, Droplet, Fingerprint, HeartPulse, Pencil, Save, Search, StickyNote, User,
+  Coins, Compass, Droplet, FileText, Fingerprint, HeartPulse, Pencil, Save, Search, StickyNote, User,
   UserPlus, X,
 } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -23,6 +23,9 @@ import { notifyPatientsChanged } from '../services/patientEvents';
 
 // Ruta del dashboard (a donde vuelve el botón "Atrás")
 const RUTA_DASHBOARD = '/dashboard';
+
+// Ruta de la historia clínica de un paciente (KAN-20)
+const rutaHistoria = (idPaciente) => `/pacientes/${idPaciente}/historia`;
 
 // Color del panel de la imagen, usado para tapar textos dibujados que cambian
 // (subtítulo, cabecera de la columna de rango y contador).
@@ -731,6 +734,17 @@ export default function RegistroPacientePage() {
                           </p>
                         </div>
 
+                        {/* Historia clínica (KAN-20) */}
+                        <button
+                          type="button"
+                          onClick={() => navigate(rutaHistoria(p.id_paciente))}
+                          aria-label={`Ver historia clínica de ${p.nombre_completo}`}
+                          title="Historia clínica"
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[#c8933e] bg-[#3a2812] text-[#f3c97a] transition hover:bg-[#523818] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd36a]"
+                        >
+                          <FileText className="h-5 w-5" aria-hidden="true" />
+                        </button>
+
                         {/* Sin botón de eliminar: el esquema no permite borrar pacientes */}
                         <button
                           type="button"
@@ -1077,6 +1091,16 @@ export default function RegistroPacientePage() {
                   {/* Sin botón de eliminar: el esquema no permite borrar pacientes
                       (historias_clinicas tiene ON DELETE RESTRICT). */}
                   <div className="flex justify-self-end gap-[0.4em]">
+                    {/* Historia clínica (KAN-20) */}
+                    <button
+                      type="button"
+                      onClick={() => navigate(rutaHistoria(p.id_paciente))}
+                      aria-label={`Ver historia clínica de ${p.nombre_completo}`}
+                      title="Historia clínica"
+                      className="rounded-md border border-[#b07a3a]/50 bg-[#2a2314] px-[0.6em] py-[0.25em] text-[1.05em] transition hover:bg-[#40341a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd36a]"
+                    >
+                      📋
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleEditar(p)}
