@@ -11,6 +11,7 @@ import EmergenciasPage from './pages/EmergenciasPage';
 import EmergenciaDetallePage from './pages/EmergenciaDetallePage';
 import ProtocoloPage from './pages/ProtocoloPage';
 import AlertasPage from './pages/AlertasPage';
+import HistoriaClinicaPage from './pages/HistoriaClinicaPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/pacientes/registro" element={<RegistroPacientePage />} />
+          <Route path="/pacientes/:id/historia" element={<HistoriaClinicaPage />} />
           <Route path="/inventario" element={<InventarioPage />} />
           <Route path="/lotes" element={<LotesPage />} />
           <Route path="/tratamientos" element={<TratamientosPage />} />
