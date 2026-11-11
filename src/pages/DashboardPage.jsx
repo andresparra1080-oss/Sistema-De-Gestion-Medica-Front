@@ -4,7 +4,7 @@
 //  - lg (1024px o más): los datos van sobre la imagen dibujada, en las <Zona> de siempre.
 //  - Menos de 1024px: la imagen es solo ambiente y los mismos elementos se ven como
 //    tarjetas (2 por fila), saludo y botones grandes. `etiqueta` y `tarjeta` solo afectan a ese modo.
-import { Activity, HeartPulse, Package, Users } from 'lucide-react';
+import { Activity, Bell, HeartPulse, Package, Siren, Users } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useDashboardStats from '../hooks/useDashboardStats';
@@ -13,6 +13,8 @@ import DashboardGrandLine, { Zona, estilos } from './DashboardGrandLine';
 // ⚠️ Debe coincidir con la ruta de la pantalla de registro de pacientes definida en App.jsx.
 const RUTA_REGISTRO_PACIENTE = '/pacientes/registro';
 const RUTA_INVENTARIO = '/inventario';
+const RUTA_EMERGENCIAS = '/emergencias';
+const RUTA_ALERTAS = '/alertas';
 
 // Número con brillo neón; `valor` null = todavía sin dato.
 // Tamaño: fijo en pantallas pequeñas, proporcional a la imagen (em) en pantallas grandes.
@@ -156,6 +158,27 @@ export default function DashboardPage() {
           </p>
         </Zona>
       )}
+
+      {/* Módulo de emergencias (Sprint 3). No está dibujado en la imagen, así que en
+          pantallas grandes los botones van visibles en la columna derecha, fuera del tablero. */}
+      <Zona x={2190} y={600} w={330} h={250} className="order-3 grid grid-cols-2 gap-3 lg:order-none lg:grid-cols-1 lg:content-center lg:gap-[1.2em]">
+        <button
+          type="button"
+          onClick={() => navigate(RUTA_EMERGENCIAS)}
+          className="flex items-center justify-center gap-2 rounded-xl border-2 border-red-400/70 bg-[#2a1115]/90 px-3 py-3 text-sm font-extrabold uppercase tracking-wide text-red-200 shadow-[0_0_18px_rgba(255,70,50,0.3)] transition hover:bg-[#3a171c] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffd36a] lg:py-[0.9em] lg:text-[1.15em]"
+        >
+          <Siren className="h-5 w-5 lg:h-[1.4em] lg:w-[1.4em]" aria-hidden="true" />
+          Emergencias
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate(RUTA_ALERTAS)}
+          className="flex items-center justify-center gap-2 rounded-xl border-2 border-amber-400/70 bg-[#2a1d0b]/90 px-3 py-3 text-sm font-extrabold uppercase tracking-wide text-amber-200 shadow-[0_0_18px_rgba(255,170,40,0.3)] transition hover:bg-[#3a2810] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffd36a] lg:py-[0.9em] lg:text-[1.15em]"
+        >
+          <Bell className="h-5 w-5 lg:h-[1.4em] lg:w-[1.4em]" aria-hidden="true" />
+          Alertas
+        </button>
+      </Zona>
 
       {/* Botones. En pantallas pequeñas "Registrar paciente" va primero (acción principal). */}
       <Zona x={1010} y={1060} w={580} h={120} className="order-2 lg:order-none">
