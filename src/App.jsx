@@ -5,6 +5,9 @@ import DashboardPage from './pages/DashboardPage';
 import RegistroPacientePage from './pages/RegistroPacientePage';
 import InventarioPage from './pages/InventarioPage';
 import NotFoundPage from './pages/NotFoundPage';
+import EmergenciasPage from './pages/EmergenciasPage';
+import ProtocoloPage from './pages/ProtocoloPage';
+import AlertasPage from './pages/AlertasPage';
 
 function App() {
   return (
@@ -16,6 +19,9 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/pacientes/registro" element={<RegistroPacientePage />} />
           <Route path="/inventario" element={<InventarioPage />} />
+          <Route path="/emergencias" element={<EmergenciasPage />} />
+          <Route path="/emergencias/protocolo/:tipo" element={<ProtocoloPage />} />
+          <Route path="/alertas" element={<AlertasPage />} />
           <Route path="/404" element={<NotFoundPage />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>

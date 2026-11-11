@@ -6,6 +6,10 @@ export const ENDPOINTS = {
   pacientes: '/api/pacientes',
   inventario: '/api/inventario',
   movimientos: '/api/movimientos',
+  // Módulo de emergencias (Sprint 3). El contrato está en docs/API_EMERGENCIAS.md
+  emergencias: '/api/emergencias',
+  protocolos: '/api/protocolos',
+  alertas: '/api/alertas',
 };
 
 function buildApiUrl(path) {
@@ -117,4 +121,64 @@ export async function createMovement(datos) {
 
 export async function getInventory() {
   return requestJson(buildApiUrl(ENDPOINTS.inventario), { headers: authHeaders() });
+}
+
+// ---- Emergencias (KAN-48) ----
+
+// `estados`: lista de estados a incluir, p. ej. ['ACTIVA', 'EN_ATENCION'].
+export async function getEmergencies(estados = []) {
+  const filtro = estados.length ? `?estado=${estados.join(',')}` : '';
+  return requestJson(buildApiUrl(`${ENDPOINTS.emergencias}${filtro}`), { headers: authHeaders() });
+}
+
+export async function getEmergency(idEmergencia) {
+  return requestJson(buildApiUrl(`${ENDPOINTS.emergencias}/${idEmergencia}`), {
+    headers: authHeaders(),
+  });
+}
+
+// `datos`: tipo, sintomas, lesiones (opcional), diagnostico_inicial,
+// nivel_urgencia (BAJA | MEDIA | ALTA | CRITICA) y pacientes (lista de id_paciente).
+// El backend pone estado ACTIVA y fecha_inicio.
+export async function createEmergency(datos) {
+  return requestJson(buildApiUrl(ENDPOINTS.emergencias), {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(datos),
+  });
+}
+
+// ---- Protocolos (KAN-50) ----
+
+export async function getProtocols() {
+  return requestJson(buildApiUrl(ENDPOINTS.protocolos), { headers: authHeaders() });
+}
+
+// `tipo`: TRAUMATISMO | HEMORRAGIA | INTOXICACION | QUEMADURA | OTRO
+export async function getProtocol(tipo) {
+  return requestJson(buildApiUrl(`${ENDPOINTS.protocolos}/${encodeURIComponent(tipo)}`), {
+    headers: authHeaders(),
+  });
+}
+
+// ---- Alertas (KAN-58) ----
+
+export async function getAlerts({ incluirResueltas = false } = {}) {
+  const filtro = incluirResueltas ? '' : '?resuelta=0';
+  return requestJson(buildApiUrl(`${ENDPOINTS.alertas}${filtro}`), { headers: authHeaders() });
+}
+
+// Marcar como leída = notificada = 1 en la tabla alertas.
+export async function markAlertRead(idAlerta) {
+  return requestJson(buildApiUrl(`${ENDPOINTS.alertas}/${idAlerta}/leida`), {
+    method: 'PUT',
+    headers: authHeaders(),
+  });
+}
+
+export async function markAllAlertsRead() {
+  return requestJson(buildApiUrl(`${ENDPOINTS.alertas}/leidas`), {
+    method: 'PUT',
+    headers: authHeaders(),
+  });
 }
