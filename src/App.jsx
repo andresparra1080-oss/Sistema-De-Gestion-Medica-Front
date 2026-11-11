@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import RegistroPacientePage from './pages/RegistroPacientePage';
 import InventarioPage from './pages/InventarioPage';
+import TratamientosPage from './pages/TratamientosPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/pacientes/registro" element={<RegistroPacientePage />} />
           <Route path="/inventario" element={<InventarioPage />} />
+          <Route path="/tratamientos" element={<TratamientosPage />} />
           <Route path="/404" element={<NotFoundPage />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>

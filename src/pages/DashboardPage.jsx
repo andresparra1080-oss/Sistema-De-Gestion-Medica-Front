@@ -4,7 +4,7 @@
 //  - lg (1024px o más): los datos van sobre la imagen dibujada, en las <Zona> de siempre.
 //  - Menos de 1024px: la imagen es solo ambiente y los mismos elementos se ven como
 //    tarjetas (2 por fila), saludo y botones grandes. `etiqueta` y `tarjeta` solo afectan a ese modo.
-import { Activity, HeartPulse, Package, Users } from 'lucide-react';
+import { Activity, HeartPulse, Package, Users, ClipboardList } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useDashboardStats from '../hooks/useDashboardStats';
@@ -13,6 +13,7 @@ import DashboardGrandLine, { Zona, estilos } from './DashboardGrandLine';
 // ⚠️ Debe coincidir con la ruta de la pantalla de registro de pacientes definida en App.jsx.
 const RUTA_REGISTRO_PACIENTE = '/pacientes/registro';
 const RUTA_INVENTARIO = '/inventario';
+const RUTA_TRATAMIENTOS = '/tratamientos';
 
 // Número con brillo neón; `valor` null = todavía sin dato.
 // Tamaño: fijo en pantallas pequeñas, proporcional a la imagen (em) en pantallas grandes.
@@ -22,9 +23,8 @@ function Cifra({ valor, color, brillo }) {
 
   return (
     <span
-      className={`font-bold leading-none tabular-nums ${
-        esLargo ? 'text-2xl lg:text-[3.1em]' : 'text-5xl lg:text-[4.6em]'
-      }`}
+      className={`font-bold leading-none tabular-nums ${esLargo ? 'text-2xl lg:text-[3.1em]' : 'text-5xl lg:text-[4.6em]'
+        }`}
       style={{
         color,
         textShadow: `0 0 0.2em ${brillo}, 0 0 0.5em ${brillo}`,
@@ -54,6 +54,7 @@ export default function DashboardPage() {
   };
 
   const irInventario = () => navigate(RUTA_INVENTARIO);
+  const irTratamientos = () => navigate(RUTA_TRATAMIENTOS);
 
   return (
     <DashboardGrandLine>
@@ -158,6 +159,18 @@ export default function DashboardPage() {
       )}
 
       {/* Botones. En pantallas pequeñas "Registrar paciente" va primero (acción principal). */}
+
+      <Zona x={1650} y={1205} w={400} h={135} className="w-full h-full rounded-full border-2 border-[#c18a45] bg-gradient-to-b from-[#49301b] via-[#2a190e] to-[#160c06] px-4 py-3 text-sm font-extrabold uppercase tracking-wider text-[#f3d58a] shadow-[inset_0_1px_0_rgba(255,220,150,0.25),0_0_16px_rgba(193,138,69,0.25)] transition-all duration-300 hover:border-[#ffd36a] hover:bg-[#51351c] hover:text-[#ffe8a8] hover:shadow-[0_0_22px_rgba(255,190,80,0.4)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffd36a]">
+        <button
+          type="button"
+          onClick={irTratamientos}
+          className="w-full rounded-full border-2 border-[#ffb25c] bg-gradient-to-b from-[#f59b2c] via-[#d9641a] to-[#a8360e] px-4 py-3 text-sm font-extrabold uppercase tracking-wide text-white shadow-lg transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffd36a] lg:h-full"
+        >
+          <ClipboardList size={20} className="mr-2 inline" />
+          Gestión de tratamientos
+        </button>
+      </Zona>
+
       <Zona x={1010} y={1060} w={580} h={120} className="order-2 lg:order-none">
         <button type="button" className={estilos.botonSecundario} onClick={handleVolverLogin}>
           Volver al login

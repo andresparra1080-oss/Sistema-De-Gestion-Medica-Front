@@ -118,3 +118,44 @@ export async function createMovement(datos) {
 export async function getInventory() {
   return requestJson(buildApiUrl(ENDPOINTS.inventario), { headers: authHeaders() });
 }
+
+// Tratamientos
+export async function getTreatments() {
+  return requestJson(buildApiUrl('/api/tratamientos'), {
+    headers: authHeaders(),
+  });
+}
+
+export async function getTreatmentsByPatient(idPaciente) {
+  return requestJson(
+    buildApiUrl(`/api/tratamientos/paciente/${idPaciente}`),
+    { headers: authHeaders() }
+  );
+}
+
+export async function createTreatment(datos) {
+  return requestJson(buildApiUrl('/api/tratamientos'), {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(datos),
+  });
+}
+
+export async function updateTreatment(idTratamiento, datos) {
+  return requestJson(buildApiUrl(`/api/tratamientos/${idTratamiento}`), {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(datos),
+  });
+}
+
+export async function updateTreatmentStatus(idTratamiento, datos) {
+  return requestJson(
+    buildApiUrl(`/api/tratamientos/${idTratamiento}/estado`),
+    {
+      method: 'PATCH',
+      headers: authHeaders(),
+      body: JSON.stringify(datos),
+    }
+  );
+}
