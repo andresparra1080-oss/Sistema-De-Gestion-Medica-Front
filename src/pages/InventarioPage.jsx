@@ -312,26 +312,34 @@ export default function InventarioPage() {
             </h1>
           </div>
 
-          {/* El titular útil no es el porcentaje, es cuántos insumos hay que
-              reponer. El porcentaje queda como dato de apoyo. */}
-          {!cargando && !errorCarga && (
-            <p className="text-sm text-[#cbb391]" role="status">
-              {bajoMinimo === 0 ? (
-                <span className="font-semibold text-[#7dffa0]">
-                  Los {total} insumos tienen stock suficiente
-                </span>
-              ) : (
-                <span className="font-semibold text-[#ff8a7a]">
-                  {bajoMinimo} de {total} insumos por debajo del mínimo
-                </span>
-              )}
-              {inventario?.porcentaje != null && (
-                <span className="ml-2 tabular-nums text-[#8a7a60]">
-                  disponibilidad {inventario.porcentaje}%
-                </span>
-              )}
-            </p>
-          )}
+          <div className="flex flex-wrap items-center gap-4">
+            <button
+              type="button"
+              onClick={() => navigate('/lotes')}
+              className="rounded-lg border border-[#ffd36a]/70 bg-gradient-to-b from-[#e8a93c] to-[#a8611a] px-3 py-2 text-xs font-bold uppercase tracking-wide text-[#2a1507] transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffd36a]"
+            >
+              Gestionar lotes y entradas →
+            </button>
+
+            {!cargando && !errorCarga && (
+              <p className="text-sm text-[#cbb391]" role="status">
+                {bajoMinimo === 0 ? (
+                  <span className="font-semibold text-[#7dffa0]">
+                    Los {total} insumos tienen stock suficiente
+                  </span>
+                ) : (
+                  <span className="font-semibold text-[#ff8a7a]">
+                    {bajoMinimo} de {total} insumos por debajo del mínimo
+                  </span>
+                )}
+                {inventario?.porcentaje != null && (
+                  <span className="ml-2 tabular-nums text-[#8a7a60]">
+                    disponibilidad {inventario.porcentaje}%
+                  </span>
+                )}
+              </p>
+            )}
+          </div>
         </header>
 
         {errorCarga && (

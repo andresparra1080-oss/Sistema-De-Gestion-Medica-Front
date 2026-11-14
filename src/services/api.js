@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   pacientes: '/api/pacientes',
   inventario: '/api/inventario',
   movimientos: '/api/movimientos',
+  lotes: '/api/lotes',
 };
 
 function buildApiUrl(path) {
@@ -158,4 +159,17 @@ export async function updateTreatmentStatus(idTratamiento, datos) {
       body: JSON.stringify(datos),
     }
   );
+}
+// ---- Lotes y entradas (KAN-23) ----
+
+export async function getLotes() {
+  return requestJson(buildApiUrl('/api/lotes'), { headers: authHeaders() });
+}
+
+export async function createLote(datos) {
+  return requestJson(buildApiUrl('/api/lotes'), {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(datos),
+  });
 }

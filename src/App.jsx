@@ -6,6 +6,7 @@ import RegistroPacientePage from './pages/RegistroPacientePage';
 import InventarioPage from './pages/InventarioPage';
 import TratamientosPage from './pages/TratamientosPage';
 import NotFoundPage from './pages/NotFoundPage';
+import LotesPage from './pages/LotesPage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/tratamientos" element={<TratamientosPage />} />
           <Route path="/404" element={<NotFoundPage />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
+          <Route path="/lotes" element={<LotesPage/>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
