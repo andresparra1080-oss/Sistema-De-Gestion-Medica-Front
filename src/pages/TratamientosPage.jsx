@@ -9,6 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
+  createMovement,
   createTreatment,
   getInventory,
   getPatients,
@@ -22,6 +23,7 @@ import {
   PaginaEnfermeria,
   Seccion,
   claseBotonPrimario,
+  claseBotonSecundario,
   claseCampo,
   claseEtiqueta,
   mensajeDeError,
@@ -80,10 +82,26 @@ function ordenarTratamientos(lista) {
   });
 }
 
-function TarjetaTratamiento({ tratamiento, paciente, medicamento, ocupado, onCambiarEstado }) {
+function TarjetaTratamiento({
+  tratamiento,
+  paciente,
+  medicamento,
+  ocupado,
+  onCambiarEstado,
+  dispensaAbierta,
+  lotes,
+  formDispensa,
+  errorDispensa,
+  dispensando,
+  onAbrirDispensa,
+  onCerrarDispensa,
+  onCambiarDispensa,
+  onDispensar,
+}) {
   const estado = estadoDe(tratamiento.estado_tratamiento);
   const id = tratamiento.id_tratamiento;
   const actual = String(tratamiento.estado_tratamiento ?? '').toUpperCase();
+  const sinLotes = lotes.length === 0;
 
   return (
     <li
@@ -124,7 +142,88 @@ function TarjetaTratamiento({ tratamiento, paciente, medicamento, ocupado, onCam
           >
             Finalizar
           </button>
+          <button
+            type="button"
+            disabled={ocupado || dispensando}
+            onClick={() => onAbrirDispensa(tratamiento)}
+            className={`${claseAccion} text-[#4aa8ff] hover:text-[#8cc8ff]`}
+          >
+            Dispensar
+          </button>
         </div>
+      )}
+
+      {actual === 'ACTIVO' && dispensaAbierta && (
+        <form
+          onSubmit={(e) => onDispensar(e, id)}
+          noValidate
+          className="mt-3 space-y-3 rounded-md border border-[#4aa8ff]/40 bg-[#0f141d]/60 p-3"
+        >
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_7rem]">
+            <div>
+              <label htmlFor={`disp-lote-${id}`} className={claseEtiqueta}>
+                Lote
+              </label>
+              <select
+                id={`disp-lote-${id}`}
+                className={`${claseCampo} h-10`}
+                value={formDispensa.id_lote}
+                onChange={(e) => onCambiarDispensa('id_lote', e.target.value)}
+                disabled={sinLotes}
+              >
+                {sinLotes && <option value="">Sin lotes disponibles</option>}
+                {lotes.map((lote) => (
+                  <option key={lote.id_lote} value={lote.id_lote}>
+                    {lote.num_lote} · vence {lote.fecha_vencimiento || 'sin fecha'} ·{' '}
+                    {lote.cantidad} disp.
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor={`disp-cantidad-${id}`} className={claseEtiqueta}>
+                Cantidad
+              </label>
+              <input
+                id={`disp-cantidad-${id}`}
+                type="number"
+                min="1"
+                step="1"
+                className={`${claseCampo} h-10`}
+                value={formDispensa.cantidad}
+                onChange={(e) => onCambiarDispensa('cantidad', e.target.value)}
+                aria-invalid={Boolean(errorDispensa)}
+              />
+            </div>
+          </div>
+
+          {sinLotes && (
+            <p className="text-xs font-semibold text-[#ffa733]">
+              No hay lotes disponibles y vigentes de este medicamento.
+            </p>
+          )}
+
+          <ErrorCampo>{errorDispensa}</ErrorCampo>
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="submit"
+              disabled={dispensando || sinLotes}
+              className={claseBotonPrimario}
+            >
+              {dispensando ? 'Dispensando…' : 'Confirmar'}
+            </button>
+            <button
+              type="button"
+              onClick={onCerrarDispensa}
+              disabled={dispensando}
+              className={claseBotonSecundario}
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
       )}
 
       {actual === 'SUSPENDIDO' && (
@@ -158,6 +257,12 @@ export default function TratamientosPage() {
   const [guardando, setGuardando] = useState(false);
   const [cambiandoId, setCambiandoId] = useState(null);
   const [aviso, setAviso] = useState(null); // { tipo: 'ok' | 'error', texto }
+
+  // Dispensación: tratamiento con el formulario abierto, sus datos y su error
+  const [dispensa, setDispensa] = useState(null);
+  const [formDispensa, setFormDispensa] = useState({ id_lote: '', cantidad: '' });
+  const [errorDispensa, setErrorDispensa] = useState('');
+  const [dispensando, setDispensando] = useState(false);
 
   const cargarDatos = useCallback(async () => {
     setCargando(true);
@@ -283,6 +388,93 @@ export default function TratamientosPage() {
       setAviso({ tipo: 'error', texto: mensajeDeError(error, 'el servicio de tratamientos') });
     } finally {
       setCambiandoId(null);
+    }
+  };
+
+  // Lotes con existencias y no vencidos del medicamento, el que vence primero
+  // arriba (sin fecha, al final). "Hoy" es la fecha local, no la UTC.
+  const lotesDe = (idMedicamento) => {
+    const medicamento = medicamentos.find(
+      (m) => Number(m.id_medicamento) === Number(idMedicamento),
+    );
+
+    const ahora = new Date();
+    const hoy = [
+      ahora.getFullYear(),
+      String(ahora.getMonth() + 1).padStart(2, '0'),
+      String(ahora.getDate()).padStart(2, '0'),
+    ].join('-');
+
+    return (medicamento?.lotes ?? [])
+      .filter(
+        (lote) =>
+          Number(lote.cantidad) > 0 &&
+          (!lote.fecha_vencimiento || String(lote.fecha_vencimiento).slice(0, 10) >= hoy),
+      )
+      .sort((a, b) =>
+        String(a.fecha_vencimiento || '9999-12-31').localeCompare(
+          String(b.fecha_vencimiento || '9999-12-31'),
+        ),
+      );
+  };
+
+  const abrirDispensa = (tratamiento) => {
+    const lotes = lotesDe(tratamiento.id_medicamento);
+
+    setAviso(null);
+    setErrorDispensa('');
+    setDispensa(tratamiento.id_tratamiento);
+    setFormDispensa({
+      id_lote: lotes[0] ? String(lotes[0].id_lote) : '',
+      cantidad: '',
+    });
+  };
+
+  const cerrarDispensa = () => {
+    setDispensa(null);
+    setErrorDispensa('');
+  };
+
+  const cambiarDispensa = (campo, valor) => {
+    setErrorDispensa('');
+    setFormDispensa((prev) => ({ ...prev, [campo]: valor }));
+  };
+
+  const dispensarDosis = async (event, idTratamiento) => {
+    event.preventDefault();
+    setErrorDispensa('');
+    setAviso(null);
+
+    if (!formDispensa.id_lote) {
+      setErrorDispensa('Elige un lote.');
+      return;
+    }
+
+    const textoCantidad = String(formDispensa.cantidad).trim();
+    const cantidad = Number(textoCantidad);
+
+    if (!/^\d+$/.test(textoCantidad) || !Number.isInteger(cantidad) || cantidad <= 0) {
+      setErrorDispensa('La cantidad debe ser un número entero mayor que 0.');
+      return;
+    }
+
+    setDispensando(true);
+
+    try {
+      await createMovement({
+        id_lote: Number(formDispensa.id_lote),
+        tipo_movimiento: 'CONSUMO',
+        cantidad,
+        id_tratamiento: Number(idTratamiento),
+      });
+
+      setDispensa(null);
+      setAviso({ tipo: 'ok', texto: 'Dosis dispensada correctamente.' });
+      await cargarDatos();
+    } catch (err) {
+      setErrorDispensa(mensajeDeError(err, 'el servicio de inventario'));
+    } finally {
+      setDispensando(false);
     }
   };
 
@@ -490,6 +682,15 @@ export default function TratamientosPage() {
                     medicamento={nombreMedicamento(t.id_medicamento)}
                     ocupado={cambiandoId === t.id_tratamiento}
                     onCambiarEstado={cambiarEstado}
+                    dispensaAbierta={dispensa === t.id_tratamiento}
+                    lotes={dispensa === t.id_tratamiento ? lotesDe(t.id_medicamento) : []}
+                    formDispensa={formDispensa}
+                    errorDispensa={errorDispensa}
+                    dispensando={dispensando}
+                    onAbrirDispensa={abrirDispensa}
+                    onCerrarDispensa={cerrarDispensa}
+                    onCambiarDispensa={cambiarDispensa}
+                    onDispensar={dispensarDosis}
                   />
                 ))}
               </ul>
