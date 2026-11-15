@@ -134,7 +134,7 @@ function ModuloClinico({ variante, onIr }) {
             <span className="min-w-0">
               <span
                 className={`block truncate font-bold uppercase leading-none tracking-wide ${
-                  escritorio ? 'text-[length:clamp(1.1rem,2.8vh,1.9rem)]' : 'text-2xl'
+                  escritorio ? 'text-[length:clamp(0.9rem,min(2.8vh,1.25vw),1.9rem)]' : 'text-2xl'
                 }`}
                 style={{ color, textShadow: `0 0 10px rgba(${rgb},0.7)` }}
               >
