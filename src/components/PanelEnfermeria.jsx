@@ -51,7 +51,7 @@ export function mensajeDeError(error, recurso) {
   // Crow responde "404 Not Found" / "405 Method Not Allowed" en texto plano
   // cuando la ruta (o el método) todavía no existe en el back.
   if (/^40[45]\b/.test(texto)) {
-    return `El backend todavía no tiene la ruta de ${recurso} que usa esta pantalla.`;
+    return `El backend todavía no tiene la ruta que usa esta pantalla para ${recurso}.`;
   }
   return texto;
 }
