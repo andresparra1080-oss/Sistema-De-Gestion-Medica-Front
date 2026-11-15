@@ -501,7 +501,7 @@ export default function MedicamentosPage() {
                   : 'Ningún medicamento coincide con la búsqueda.'}
               </p>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="relative overflow-x-auto">
                 <table className="w-full sm:min-w-[520px] text-sm">
                   <thead>
                     <tr className="border-b border-[#b07a3a]/40 text-left text-[11px] font-bold uppercase tracking-wider text-[#a58a5a]">
