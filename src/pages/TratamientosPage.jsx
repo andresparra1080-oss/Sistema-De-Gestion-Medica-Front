@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, Plus, ClipboardList } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +8,7 @@ import {
   getTreatments,
   createTreatment,
   updateTreatmentStatus,
+  createMovement,
 } from '../services/api';
 
 function obtenerLista(respuesta, posiblesClaves) {
@@ -48,6 +49,12 @@ function TratamientosPage() {
     fecha_inicio: fechaHoy(),
     fecha_fin: '',
   });
+
+  // Dispensación: tratamiento con el formulario abierto, sus datos y su error
+  const [dispensa, setDispensa] = useState(null);
+  const [formDispensa, setFormDispensa] = useState({ id_lote: '', cantidad: '' });
+  const [errorDispensa, setErrorDispensa] = useState('');
+  const [dispensando, setDispensando] = useState(false);
 
   const cargarDatos = useCallback(async () => {
     setCargando(true);
@@ -180,6 +187,92 @@ function TratamientosPage() {
       await cargarDatos();
     } catch (err) {
       setError(err.message || 'No se pudo actualizar el estado.');
+    }
+  };
+
+  // Lotes con existencias y no vencidos del medicamento, el que vence primero
+  // arriba (sin fecha, al final)
+  const lotesDe = (idMedicamento) => {
+    const medicamento = medicamentos.find(
+      (m) => Number(m.id_medicamento) === Number(idMedicamento)
+    );
+
+    const ahora = new Date();
+    const hoy = [
+      ahora.getFullYear(),
+      String(ahora.getMonth() + 1).padStart(2, '0'),
+      String(ahora.getDate()).padStart(2, '0'),
+    ].join('-');
+
+    return (medicamento?.lotes ?? [])
+      .filter(
+        (lote) =>
+          Number(lote.cantidad) > 0 &&
+          (!lote.fecha_vencimiento ||
+            String(lote.fecha_vencimiento).slice(0, 10) >= hoy)
+      )
+      .sort((a, b) =>
+      String(a.fecha_vencimiento || '9999-12-31').localeCompare(
+        String(b.fecha_vencimiento || '9999-12-31')
+      )
+    );
+  };
+
+  const abrirDispensa = (tratamiento) => {
+    const lotes = lotesDe(tratamiento.id_medicamento);
+
+    setMensaje('');
+    setErrorDispensa('');
+    setDispensa(tratamiento.id_tratamiento);
+    setFormDispensa({
+      id_lote: lotes[0] ? String(lotes[0].id_lote) : '',
+      cantidad: '',
+    });
+  };
+
+  const cerrarDispensa = () => {
+    setDispensa(null);
+    setErrorDispensa('');
+  };
+
+  const dispensarDosis = async (e, idTratamiento) => {
+    e.preventDefault();
+    setErrorDispensa('');
+    setMensaje('');
+
+    if (!formDispensa.id_lote) {
+      setErrorDispensa('Elige un lote.');
+      return;
+    }
+
+    const cantidad = Number(formDispensa.cantidad);
+
+    if (
+      !/^\d+$/.test(String(formDispensa.cantidad).trim()) ||
+      !Number.isInteger(cantidad) ||
+      cantidad <= 0
+    ) {
+      setErrorDispensa('La cantidad debe ser un número entero mayor que 0.');
+      return;
+    }
+
+    setDispensando(true);
+
+    try {
+      await createMovement({
+        id_lote: Number(formDispensa.id_lote),
+        tipo_movimiento: 'CONSUMO',
+        cantidad,
+        id_tratamiento: Number(idTratamiento),
+      });
+
+      setDispensa(null);
+      setMensaje('Dosis dispensada correctamente.');
+      await cargarDatos();
+    } catch (err) {
+      setErrorDispensa(err.message || 'No se pudo dispensar la dosis.');
+    } finally {
+      setDispensando(false);
     }
   };
 
@@ -396,10 +489,8 @@ function TratamientosPage() {
 
                 <tbody>
                   {tratamientos.map((t) => (
-                    <tr
-                      key={t.id_tratamiento}
-                      className="border-b border-slate-800 hover:bg-slate-800/50"
-                    >
+                    <Fragment key={t.id_tratamiento}>
+                    <tr className="border-b border-slate-800 hover:bg-slate-800/50">
                       <td className="p-3">
                         {nombrePaciente(t.id_paciente)}
                       </td>
@@ -440,6 +531,13 @@ function TratamientosPage() {
                             >
                               Finalizar
                             </button>
+
+                            <button
+                              onClick={() => abrirDispensa(t)}
+                              className="text-xs text-sky-400 hover:underline"
+                            >
+                              Dispensar
+                            </button>
                           </div>
                         )}
 
@@ -458,6 +556,98 @@ function TratamientosPage() {
                         )}
                       </td>
                     </tr>
+
+                    {dispensa === t.id_tratamiento &&
+                      t.estado_tratamiento === 'ACTIVO' && (
+                        <tr className="border-b border-slate-800 bg-slate-800/40">
+                          <td colSpan={7} className="p-3">
+                            <form
+                              onSubmit={(e) => dispensarDosis(e, t.id_tratamiento)}
+                              className="flex flex-wrap items-end gap-3"
+                            >
+                              <label className="text-xs text-slate-300">
+                                Lote
+                                <select
+                                  value={formDispensa.id_lote}
+                                  onChange={(e) => {
+                                    setErrorDispensa('');
+                                    setFormDispensa((f) => ({
+                                      ...f,
+                                      id_lote: e.target.value,
+                                    }));
+                                  }}
+                                  className={`${campoClase} mt-1 min-w-[16rem]`}
+                                >
+                                  {lotesDe(t.id_medicamento).length === 0 && (
+                                    <option value="">Sin lotes disponibles</option>
+                                  )}
+                                  {lotesDe(t.id_medicamento).map((lote) => (
+                                    <option key={lote.id_lote} value={lote.id_lote}>
+                                      {lote.num_lote} · vence{' '}
+                                      {lote.fecha_vencimiento || 'sin fecha'} ·{' '}
+                                      {lote.cantidad} disp.
+                                    </option>
+                                  ))}
+                                </select>
+                              </label>
+
+                              <label className="text-xs text-slate-300">
+                                Cantidad
+                                <input
+                                  type="number"
+                                  min="1"
+                                  step="1"
+                                  value={formDispensa.cantidad}
+                                  onChange={(e) => {
+                                    setErrorDispensa('');
+                                    setFormDispensa((f) => ({
+                                      ...f,
+                                      cantidad: e.target.value,
+                                    }));
+                                  }}
+                                  className={`${campoClase} mt-1 w-28`}
+                                />
+                              </label>
+
+                              <div className="flex gap-3 pb-2">
+                                <button
+                                  type="submit"
+                                  disabled={
+                                    dispensando ||
+                                    lotesDe(t.id_medicamento).length === 0
+                                  }
+                                  className="text-xs text-green-400 hover:underline disabled:opacity-50"
+                                >
+                                  {dispensando ? 'Dispensando...' : 'Confirmar'}
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={cerrarDispensa}
+                                  disabled={dispensando}
+                                  className="text-xs text-slate-400 hover:underline disabled:opacity-50"
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+
+                              {lotesDe(t.id_medicamento).length === 0 && (
+                                <p className="w-full text-xs text-amber-300">
+                                  No hay lotes disponibles y vigentes de este
+                                  medicamento.
+                                </p>
+                              )}
+
+                              {errorDispensa && (
+                                <p className="w-full text-xs text-red-300">
+                                  {errorDispensa}
+                                </p>
+                              )}
+                            </form>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
