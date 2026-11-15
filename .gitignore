@@ -2,5 +2,7 @@ node_modules
 dist
 .vite
 .env
+.vscode/
 .DS_Store
 npm-debug.log*
+
