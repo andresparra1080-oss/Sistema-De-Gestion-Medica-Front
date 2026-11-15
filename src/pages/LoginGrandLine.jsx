@@ -1,8 +1,15 @@
-// Fondo del login con capas transparentes para inputs y botones.
+// LoginGrandLine.jsx
+// Usa la imagen del diseño COMPLETA (public/fondo-login.jpg) como fondo y coloca
+// encima los campos reales (inputs, select, botón) justo sobre los dibujados.
+// No tiene lógica: tu formulario actual va adentro con sus mismos nombres.
+//
+// Todas las posiciones están en píxeles de la imagen original (1600 x 893).
+// Si algún campo queda corrido, ajusta x, y, w, h de su <Zona>.
 import fondoLogin from "../images/login.jpg";
 const IMG_W = 1580;
 const IMG_H = 893;
 
+// Clases para tus campos (ya vienen con el color del cuero para tapar lo dibujado)
 export const estilos = {
   input:
     "h-full w-full rounded-md border-0 bg-[#2a190b] px-[3%] text-[#fbe9c0] " +
@@ -10,7 +17,7 @@ export const estilos = {
   select:
     "h-full w-full appearance-none rounded-md border-0 bg-[#2a190b] px-[3%] text-[#fbe9c0] " +
     "outline-none focus:ring-2 focus:ring-[#ffd36a]",
-  // Botón transparente sobre la imagen base.
+  // Botón transparente: el dibujo del botón ya está en la imagen
   boton:
     "h-full w-full rounded-full bg-transparent text-transparent transition " +
     "hover:bg-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffd36a] " +
@@ -19,7 +26,7 @@ export const estilos = {
   enlace: "block h-full w-full text-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd36a]",
 };
 
-// Posiciona un elemento sobre la imagen usando coordenadas en px.
+// Posiciona un elemento sobre la imagen usando coordenadas en píxeles de la imagen
 export function Zona({ x, y, w, h, className = "", children }) {
   return (
     <div
@@ -39,7 +46,7 @@ export function Zona({ x, y, w, h, className = "", children }) {
 export default function LoginGrandLine({ children }) {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-[#1a1008]">
-      {/* Imagen de fondo con alineación lateral. */}
+      {/* La imagen se ajusta como "cover" y se alinea a la derecha para que el panel nunca quede cortado */}
       <div
         className="absolute right-0 top-0"
         style={{
