@@ -5,7 +5,7 @@
 //    y el módulo clínico va en una barra propia debajo de la imagen (no se encima con el dibujo).
 //  - Menos de 1024px: la imagen es solo ambiente y los mismos elementos se ven como
 //    tarjetas (2 por fila), saludo y botones grandes. `etiqueta` y `tarjeta` solo afectan a ese modo.
-import { Activity, Bell, ClipboardList, HeartPulse, Package, Siren, Users } from 'lucide-react';
+import { Activity, Bell, ClipboardList, HeartPulse, Package, Pill, Siren, Users } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useDashboardStats from '../hooks/useDashboardStats';
@@ -17,6 +17,7 @@ const RUTA_INVENTARIO = '/inventario';
 const RUTA_TRATAMIENTOS = '/tratamientos';
 const RUTA_EMERGENCIAS = '/emergencias';
 const RUTA_ALERTAS = '/alertas';
+const RUTA_MEDICAMENTOS = '/medicamentos';
 
 // Número con brillo neón; `valor` null = todavía sin dato.
 // Tamaño: fijo en pantallas pequeñas, proporcional a la imagen (em) en pantallas grandes.
@@ -51,10 +52,11 @@ const ACCESOS = [
   { ruta: RUTA_EMERGENCIAS, titulo: 'Emergencias', detalle: 'Atender ahora', Icono: Siren, color: '#ff8a7a', rgb: '255,70,50' },
   { ruta: RUTA_ALERTAS, titulo: 'Alertas', detalle: 'Avisos pendientes', Icono: Bell, color: '#ffd978', rgb: '255,170,40' },
   { ruta: RUTA_TRATAMIENTOS, titulo: 'Tratamientos', detalle: 'Planes de cuidado', Icono: ClipboardList, color: '#8fdcff', rgb: '70,170,255' },
+  { ruta: RUTA_MEDICAMENTOS, titulo: 'Medicamentos', detalle: 'Catálogo y umbrales', Icono: Pill, color: '#7dffa0', rgb: '60,230,110' },
 ];
 
 // Módulo clínico. Dos variantes del mismo componente:
-//  - 'escritorio': barra horizontal (título + tres botones grandes) bajo la imagen.
+//  - 'escritorio': barra horizontal (título + un botón grande por acceso) bajo la imagen.
 //  - 'movil': panel a todo el ancho, con los botones apilados y su descripción.
 function ModuloClinico({ variante, onIr }) {
   const escritorio = variante === 'escritorio';

@@ -12,6 +12,7 @@ import EmergenciaDetallePage from './pages/EmergenciaDetallePage';
 import ProtocoloPage from './pages/ProtocoloPage';
 import AlertasPage from './pages/AlertasPage';
 import HistoriaClinicaPage from './pages/HistoriaClinicaPage';
+import MedicamentosPage from './pages/MedicamentosPage';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/emergencias/protocolo/:tipo" element={<ProtocoloPage />} />
           <Route path="/emergencias/:id" element={<EmergenciaDetallePage />} />
           <Route path="/alertas" element={<AlertasPage />} />
+          <Route path="/medicamentos" element={<MedicamentosPage />} />
           <Route path="/404" element={<NotFoundPage />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>

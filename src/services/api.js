@@ -144,6 +144,35 @@ export async function getInventory() {
   return requestJson(buildApiUrl(ENDPOINTS.inventario), { headers: authHeaders() });
 }
 
+// ---- Catálogo de medicamentos (KAN-22) ----
+// El back guarda el catálogo en /api/inventario: el mismo GET de arriba lista
+// cada medicamento con su umbral, y POST/PUT/DELETE lo administran.
+// datos: { nombre, tipo_insumo, unidad_medida, descripcion, umbral_minimo }
+
+export async function createMedication(datos) {
+  return requestJson(buildApiUrl(ENDPOINTS.inventario), {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(datos),
+  });
+}
+
+export async function updateMedication(idMedicamento, datos) {
+  return requestJson(buildApiUrl(`${ENDPOINTS.inventario}/${idMedicamento}`), {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(datos),
+  });
+}
+
+// El back no deja borrar un medicamento con lotes o movimientos asociados
+export async function deleteMedication(idMedicamento) {
+  return requestJson(buildApiUrl(`${ENDPOINTS.inventario}/${idMedicamento}`), {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
+}
+
 // ---- Tratamientos ----
 
 export async function getTreatments() {
