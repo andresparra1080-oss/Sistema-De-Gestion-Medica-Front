@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import RegistroPacientePage from './pages/RegistroPacientePage';
 import InventarioPage from './pages/InventarioPage';
+import TratamientosPage from './pages/TratamientosPage';
 import NotFoundPage from './pages/NotFoundPage';
 import EmergenciasPage from './pages/EmergenciasPage';
 import ProtocoloPage from './pages/ProtocoloPage';
@@ -19,6 +20,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/pacientes/registro" element={<RegistroPacientePage />} />
           <Route path="/inventario" element={<InventarioPage />} />
+          <Route path="/tratamientos" element={<TratamientosPage />} />
           <Route path="/emergencias" element={<EmergenciasPage />} />
           <Route path="/emergencias/protocolo/:tipo" element={<ProtocoloPage />} />
           <Route path="/alertas" element={<AlertasPage />} />
