@@ -21,7 +21,8 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import FondoAmbiente from './FondoAmbiente';
 import fondoPacientes from '../images/pacientes.jpg';
-import { getMedicalHistory, getPatientById, updateMedicalHistory } from '../services/api';
+import HistorialAuditoria from '../components/HistorialAuditoria';
+import { getMedicalHistory, getPatientAudit, getPatientById, updateMedicalHistory } from '../services/api';
 
 const RUTA_PACIENTES = '/pacientes/registro';
 const FUENTE_TITULO = "'Cinzel', Georgia, serif";
@@ -32,6 +33,7 @@ const MAX_SUSTANCIA = 80;
 // Límites de la pantalla (el back no los muestra): ajustar si el esquema dice otra cosa.
 const LIMITES = { antecedentes: 1000, cirugias_previas: 1000, observaciones: 500 };
 
+// Mismos valores y colores que la pantalla de registro de pacientes
 const ESTADOS = {
   CRITICO: { label: 'Crítico', color: '#ff6b5b' },
   EN_RECUPERACION: { label: 'En recuperación', color: '#ffa733' },
@@ -263,6 +265,9 @@ export default function HistoriaClinicaPage() {
   const [mensaje, setMensaje] = useState(null); // { tipo: 'ok' | 'error', texto }
   const [nuevaAlergia, setNuevaAlergia] = useState('');
   const [errorAlergia, setErrorAlergia] = useState('');
+  const [auditoria, setAuditoria] = useState([]); // KAN-54: quién cambió qué y cuándo
+  const [cargandoAuditoria, setCargandoAuditoria] = useState(true);
+  const [errorAuditoria, setErrorAuditoria] = useState('');
 
   const cargar = useCallback(async () => {
     if (!idValido) {
@@ -298,6 +303,27 @@ export default function HistoriaClinicaPage() {
   useEffect(() => {
     cargar();
   }, [cargar]);
+
+  // Historial de auditoría (KAN-54): se carga aparte, para que un fallo no tape la historia
+  const cargarAuditoria = useCallback(async () => {
+    if (!idValido) return;
+    setCargandoAuditoria(true);
+    try {
+      const respuesta = await getPatientAudit(id);
+      setAuditoria(
+        Array.isArray(respuesta) ? respuesta : respuesta?.auditoria ?? respuesta?.historial ?? [],
+      );
+      setErrorAuditoria('');
+    } catch {
+      setErrorAuditoria('No se pudo cargar el historial de auditoría.');
+    } finally {
+      setCargandoAuditoria(false);
+    }
+  }, [id, idValido]);
+
+  useEffect(() => {
+    cargarAuditoria();
+  }, [cargarAuditoria]);
 
   const cambios = useMemo(
     () => (original && form ? calcularCambios(original, form) : {}),
@@ -385,6 +411,7 @@ export default function HistoriaClinicaPage() {
         setOriginal(form);
       }
       setMensaje({ tipo: 'ok', texto: respuesta?.message || 'Historia clínica actualizada' });
+      cargarAuditoria(); // el cambio recién guardado ya está en la bitácora
     } catch (error) {
       setMensaje({ tipo: 'error', texto: error.message || 'No se pudo guardar la historia clínica.' });
     } finally {
@@ -681,6 +708,16 @@ export default function HistoriaClinicaPage() {
               </button>
             </div>
           </div>
+
+          {/* Historial de auditoría del paciente (KAN-54) */}
+          <HistorialAuditoria
+            titulo="Historial de auditoría"
+            registros={auditoria}
+            cargando={cargandoAuditoria}
+            error={errorAuditoria}
+            onActualizar={cargarAuditoria}
+            vacio="Todavía no hay cambios registrados para este paciente."
+          />
         </div>
       </Marco>
     </Pagina>

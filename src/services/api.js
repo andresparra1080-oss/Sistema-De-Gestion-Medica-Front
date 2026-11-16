@@ -339,3 +339,9 @@ export async function markAllAlertsRead() {
     headers: authHeaders(),
   });
 }
+// ---- Auditoría del paciente (KAN-54) ----
+export async function getPatientAudit(idPaciente) {
+  return requestJson(buildApiUrl(`${ENDPOINTS.pacientes}/${idPaciente}/auditoria`), {
+    headers: authHeaders(),
+  });
+}
